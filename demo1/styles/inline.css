@@ -322,28 +322,29 @@ body {
 .weather-forecast .icon {
   background-repeat: no-repeat;
   background-size: contain; }
+/* 이미지파일 */
   .weather-forecast .icon.clear-day {
-    background-image: url("/images/clear.png"); }
+    background-image: url("/images/clear2.png"); }
   .weather-forecast .icon.clear-night {
-    background-image: url("/images/clear.png"); }
+    background-image: url("/images/clear2.png"); }
   .weather-forecast .icon.rain {
-    background-image: url("/images/rain.png"); }
+    background-image: url("/images/rain2.png"); }
   .weather-forecast .icon.snow {
-    background-image: url("/images/snow.png"); }
+    background-image: url("/images/snow2.png"); }
   .weather-forecast .icon.sleet {
     background-image: url("/images/sleet.png"); }
   .weather-forecast .icon.windy {
-    background-image: url("/images/wind.png"); }
+    background-image: url("/images/wind2.png"); }
   .weather-forecast .icon.fog {
     background-image: url("/images/fog.png"); }
   .weather-forecast .icon.cloudy {
-    background-image: url("/images/cloudy.png"); }
+    background-image: url("/images/cloudy2.png"); }
   .weather-forecast .icon.partly-cloudy-day {
-    background-image: url("/images/partly-cloudy.png"); }
+    background-image: url("/images/partly-cloudy2.png"); }
   .weather-forecast .icon.partly-cloudy-night {
-    background-image: url("/images/partly-cloudy.png"); }
+    background-image: url("/images/partly-cloudy2.png"); }
   .weather-forecast .icon.thunderstorms {
-    background-image: url("/images/thunderstorm.png"); }
+    background-image: url("/images/thunderstorm2.png"); }
 
 @media (max-width: 450px) {
   .weather-forecast .date, .weather-forecast .description {
