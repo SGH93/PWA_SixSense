@@ -1,10 +1,14 @@
+var request = require("request");  
+var cheerio = require("cheerio");  
+var url = "https://m.weather.naver.com/";
 
+request(url, function(error, response, body) {  
+  if (error) throw error;
 
+  var $ = cheerio.load(body);
 
-console.log("hellow");
-var request = require('request');
-request('http://www.google.com', function (error, response, body) {
-  console.log('error:', error); // Print the error if one occurred
-  console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-  console.log('body:', body); // Print the HTML for the Google homepage.
+  var current_temp = $("em.degree_code.full"); //현재 온도 긁어오기
+  
+  console.log(current_temp.text());  //콘솔로 확인
+
 });
