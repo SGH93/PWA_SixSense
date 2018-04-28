@@ -82,16 +82,19 @@ limitations under the License.
 <!-- START INITIALIZATION CODE -->
 <!-- PASTE FIREBASE INITIALIZATION CODE HERE -->
 <script src="https://www.gstatic.com/firebasejs/3.5.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.5.2/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/3.5.2/firebase-messaging.js"></script>
 <script>
-  firebase.initializeApp({
-    'messagingSenderId': '353946484984'
+  var config = {
+    apiKey: "AIzaSyAw7V4lqHh075OpAlxam1TxYeEMC2x5S5w",
+    authDomain: "js-master-bc04e.firebaseapp.com",
+    databaseURL: "https://js-master-bc04e.firebaseio.com",
+    projectId: "js-master-bc04e",
+    storageBucket: "js-master-bc04e.appspot.com",
+    messagingSenderId: "253635798726"
+  };
+  firebase.initializeApp(config);
 
-  });
-</script>
-<!-- END INITIALIZATION CODE -->
-<!-- ******************************************************** -->
-<script>
   // [START get_messaging_object]
   // Retrieve Firebase Messaging object.
   const messaging = firebase.messaging();
@@ -174,10 +177,14 @@ limitations under the License.
   // Send the Instance ID token your application server, so that it can:
   // - send messages back to this app
   // - subscribe/unsubscribe the token from topics
+
+
   function sendTokenToServer(currentToken) {
     if (!isTokenSentToServer()) {
       console.log('Sending token to server...');
-      // TODO(developer): Send the current token to your server.
+      var usrTkn= firebase.database().ref('/token'+'/'+currentToken.substring(0,11));
+      usrTkn.set(currentToken);
+
       setTokenSentToServer(true);
     } else {
       console.log('Token already sent to server so won\'t send it again ' +
@@ -233,6 +240,8 @@ limitations under the License.
       messaging.deleteToken(currentToken)
       .then(function() {
         console.log('Token deleted.');
+        var dltTkn= firebase.database().ref('/token'+'/'+currentToken.substring(0,11));
+        dltTkn.remove();
         setTokenSentToServer(false);
         // [START_EXCLUDE]
         // Once token is deleted update UI.
