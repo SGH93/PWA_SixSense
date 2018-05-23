@@ -5,7 +5,7 @@
 
 
   // Get a reference to the database service
-  var database = firebase.database();
+  var database = firebase.database().ref("/");
 
   var app = {
     isLoading: true,
@@ -13,7 +13,7 @@
     spinner: document.querySelector('.loader'),
     cardTemplate: document.querySelector('.cardTemplate'),
     container: document.querySelector('.main'),
-    addDialog: document.querySelector('.dialog-container'),
+    //addDialog: document.querySelector('.dialog-container'),
   };
 
    
@@ -80,39 +80,40 @@
     if (!card) {
       card = app.cardTemplate.cloneNode(true);
       card.classList.remove('cardTemplate');
-      card.querySelector('.location').textContent = data.label;
+      //card.querySelector('.location').textContent = data.label;
       card.removeAttribute('hidden');
+      
       app.container.appendChild(card);
       app.visibleCards[data.key] = card;
     }
 
-  /*  효율적인 코딩을 위한 cost 줄이기_ 시간 이용
-      // Verifies the data provide is newer than what's already visible
-      // on the card, if it's not bail, if it is, continue and update the
-      // time saved in the card
-      var dataLastUpdated = new Date(data.created);
-      var cardLastUpdatedElem = card.querySelector('.card-last-updated');
-      var cardLastUpdatcled = cardLastUpdatedElem.textContent;
-      if (cardLastUpdated) {
-        cardLastUpdated = new Date(cardLastUpdated);
-        // Bail if the card has more recent data then the data
-        if (dataLastUpdated.getTime() < cardLastUpdated.getTime()) {
-          return;
+    /*  효율적인 코딩을 위한 cost 줄이기_ 시간 이용
+        // Verifies the data provide is newer than what's already visible
+        // on the card, if it's not bail, if it is, continue and update the
+        // time saved in the card
+        var dataLastUpdated = new Date(data.created);
+        var cardLastUpdatedElem = card.querySelector('.card-last-updated');
+        var cardLastUpdatcled = cardLastUpdatedElem.textContent;
+        if (cardLastUpdated) {
+          cardLastUpdated = new Date(cardLastUpdated);
+          // Bail if the card has more recent data then the data
+          if (dataLastUpdated.getTime() < cardLastUpdated.getTime()) {
+            return;
+          }
         }
-      }
-      cardLastUpdatedElem.textContent = data.created; 
-  */
+        cardLastUpdatedElem.textContent = data.created; 
+    */
 
 
     card.querySelector('.current .icon').classList.add(app.getIconClass(temp.weather));
-    card.querySelector('.location').textContent                       = temp.label;
-    card.querySelector('.description').textContent                    = temp.weather;
-    card.querySelector('.date').textContent                           = temp.time;
-    card.querySelector('.current .temperature .value').textContent    = temp.degree;
-    card.querySelector('.current .description .dust').textContent     = condition.dust;
-    card.querySelector('.current .sensible .value').textContent       = condition.temp.sensible;
-    card.querySelector('.current .highest').textContent               = condition.temp.highest;
-    card.querySelector('.current .lowest').textContent                = condition.temp.lowest;
+    card.querySelector('.location').textContent                              = temp.label;
+    //card.querySelector('.description').textContent                         = temp.weather;
+    card.querySelector('.date').textContent                                  = temp.time;
+    card.querySelector('.current .temperature .value').textContent           = temp.degree;
+    card.querySelector('.current .description .dust .value').textContent     = condition.dust;
+    card.querySelector('.current .description .sensible .value').textContent = condition.temp.sensible;
+    card.querySelector('.current .description .highest .value').textContent  = condition.temp.highest;
+    card.querySelector('.current .description .lowest .value').textContent   = condition.temp.lowest;
     
 
     var nextDays = card.querySelectorAll('.future .oneday');
@@ -120,7 +121,7 @@
       var nextDay = nextDays[i];
       var daily = weekly[i];
       if (daily && nextDay) {
-        nextDay.querySelector('.icon').classList.add(app.getIconClass(weekly.code));
+        nextDay.querySelector('.icon').classList.add(app.getIconClass(daily.code));
         nextDay.querySelector('.date').textContent             = daily.date;
         nextDay.querySelector('.day').textContent              = daily.day;
         nextDay.querySelector('.temp-high .value').textContent = daily.high;
@@ -153,6 +154,7 @@
         }
       });
     }
+
     // Fetch the latest data.
     var request = new XMLHttpRequest();
     request.onreadystatechange = function() {
@@ -169,6 +171,8 @@
     };
     request.open('GET', url);
     request.send();
+
+
   };
 
   // Iterate all of the cards and attempt to get the latest forecast data
@@ -276,11 +280,12 @@
   
 
 
+database.on('value',function(snapshot){
+  app.updateForecastCard(snapshot.val());
+});
 
-
-   app.getForecast();
-  
-  // TODO add service worker code here
+   //app.getForecast();
+   // TODO add service worker code here
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker
              .register('./service-worker.js')

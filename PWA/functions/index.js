@@ -10,7 +10,7 @@ var current = {
 
         "temp" :{
             "degree": " ",
-            "weather": " ",
+            "weather": "32",
             "label": " ",
             "time":" ",
             "created": " "
@@ -58,8 +58,8 @@ function () {
                 current["temp"]["label"] = temp.text(); //위치
 
                 //time
-                current["temp"]["time"] = d.getFullYear().toString()+"/"+(d.getMonth()+1).toString() +"/" + d.getDate().toString() +"/" + 
-                                        ((d.getUTCHours()+9)%24).toString() +"/" + d.getMinutes().toString() + "/" + d.getSeconds().toString();
+                current["temp"]["time"] = d.getFullYear().toString()+"/"+(d.getMonth()+1).toString() +"/" + d.getDate().toString() +"  " + 
+                                        ((d.getUTCHours()+9)%24).toString() +" : " + d.getMinutes().toString() + " : " + d.getSeconds().toString();
 
                 //created
                 temp = $("div.card.card_now > span.text.text_location")
