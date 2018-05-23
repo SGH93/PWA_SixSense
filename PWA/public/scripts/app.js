@@ -71,9 +71,9 @@
   app.updateForecastCard = function(data) {
     
 
-    var temp      = data.current.temp;
-    var condition = data.current.condition;
-    var weekly    = data.weekly;
+    var temp      = data.weather.current.temp;
+    var condition = data.weather.current.condition;
+    var weekly    = data.weather.weekly;
 
 
     var card = app.visibleCards[data.key];
@@ -243,33 +243,35 @@
    * discussion.
    */
   var initialWeatherForecast = {
+    "weather" : {  
       "current": {
-        "temp" :{
-          "degree": "",
-          "weather": "",
-          "label": "",
-          "time":"",
-          "created": ""
-        },
-  
-        "condition": {
-          "temp": {
-            "highest": "",
-            "lowest": "",
-            "sensible": ""
+          "temp" :{
+            "degree": "",
+            "weather": "",
+            "label": "",
+            "time":"",
+            "created": ""
           },
-          "dust": ""
-        }
-      },
-      "weekly": [
-        {"date": "","day": "","code": 44, "high": 86, "low": 70},
-        {"date": "","day": "","code": 44, "high": 94, "low": 73},
-        {"date": "","day": "","code": 4, "high": 95, "low": 78},
-        {"date": "","day": "","code": 24, "high": 75, "low": 89},
-        {"date": "","day": "","code": 24, "high": 89, "low": 77},
-        {"date": "","day": "","code": 44, "high": 92, "low": 79},
-        {"date": "","day": "","code": 44, "high": 89, "low": 77}
-      ]
+    
+          "condition": {
+            "temp": {
+              "highest": "",
+              "lowest": "",
+              "sensible": ""
+            },
+            "dust": ""
+          }
+        },
+        "weekly": [
+          {"date": "","day": "","code": "", "high": "", "low": ""},
+          {"date": "","day": "","code": "", "high": "", "low": ""},
+          {"date": "","day": "","code": "", "high": "", "low": ""},
+          {"date": "","day": "","code": "", "high": "", "low": ""},
+          {"date": "","day": "","code": "", "high": "", "low": ""},
+          {"date": "","day": "","code": "", "high": "", "low": ""},
+          {"date": "","day": "","code": "", "high": "", "low": ""}
+        ]
+    }
   };
   
 
