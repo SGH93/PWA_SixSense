@@ -108,6 +108,34 @@ body {
     border: none;
     outline: none;
     cursor: pointer; }
+  .header #user-container {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    top: 12px;
+    width: 100%;
+    right: 0;
+    padding-left: 10px;
+    justify-content: flex-end;
+    padding-right: 90px;
+  }
+  .header #user-container #user-pic {
+    top: -3px;
+    position: relative;
+    display: inline-block;
+    background-image: url('/images/profile_placeholder.png');
+    background-repeat: no-repeat;
+    width: 40px;
+    height: 40px;
+    background-size: 40px;
+    border-radius: 20px;
+  }
+  .header #user-container #user-name {
+    font-size: 16px;
+    line-height: 36px;
+    padding-right: 10px;
+    padding-left: 20px;
+  }
   .header #butRefresh {
     background: url(/images/ic_refresh_white_24px.svg) center center no-repeat; }
   .header #butAdd {

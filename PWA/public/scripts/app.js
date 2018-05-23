@@ -1,15 +1,8 @@
+
 (function() {
   'use strict';
 
-  // Initialize Firebase
-  var config = {
-    apiKey: "AIzaSyAVPBxezvh6qI1iKhTJh3I7xCCfq_8UTDg",
-    authDomain: "pwa-sixsense.firebaseapp.com",
-    databaseURL: "https://pwa-sixsense.firebaseio.com",
-    projectId: "pwa-sixsense",
-    storageBucket: "pwa-sixsense.appspot.com",
-    messagingSenderId: "870211420843"
-  }; firebase.initializeApp(config);
+
 
   // Get a reference to the database service
   var database = firebase.database();
@@ -33,42 +26,42 @@
   });
 
 
-/*도시추가 및 지역 선택 기능  졸작으로 하자.
-  document.getElementById('butAdd').addEventListener('click', function() {
-    // Open/show the add new city dialog
-    app.toggleAddDialog(true);
-  });
+  /*도시추가 및 지역 선택 기능  졸작으로 하자.
+    document.getElementById('butAdd').addEventListener('click', function() {
+      // Open/show the add new city dialog
+      app.toggleAddDialog(true);
+    });
 
-  document.getElementById('butAddCity').addEventListener('click', function() {
-    // Add the newly selected city
-    var select = document.getElementById('selectCityToAdd');
-    var selected = select.options[select.selectedIndex];
-    var key = selected.value;
-    var label = selected.textContent;
-    if (!app.selectedCities) {
-      app.selectedCities = [];
-    }
-    app.getForecast(key, label);
-    app.selectedCities.push({key: key, label: label});
-    app.saveSelectedCities();
-    app.toggleAddDialog(false);
-  });
+    document.getElementById('butAddCity').addEventListener('click', function() {
+      // Add the newly selected city
+      var select = document.getElementById('selectCityToAdd');
+      var selected = select.options[select.selectedIndex];
+      var key = selected.value;
+      var label = selected.textContent;
+      if (!app.selectedCities) {
+        app.selectedCities = [];
+      }
+      app.getForecast(key, label);
+      app.selectedCities.push({key: key, label: label});
+      app.saveSelectedCities();
+      app.toggleAddDialog(false);
+    });
 
-  document.getElementById('butAddCancel').addEventListener('click', function() {
-    // Close the add new city dialog
-    app.toggleAddDialog(false);
-  });
+    document.getElementById('butAddCancel').addEventListener('click', function() {
+      // Close the add new city dialog
+      app.toggleAddDialog(false);
+    });
 
-  app.toggleAddDialog = function(visible) {
-    //Methods to update/refresh the UI
-    // Toggles the visibility of the add new city dialog.
-    if (visible) {
-      app.addDialog.classList.add('dialog-container--visible');
-    } else {
-      app.addDialog.classList.remove('dialog-container--visible');
-    }
-  };
-*/
+    app.toggleAddDialog = function(visible) {
+      //Methods to update/refresh the UI
+      // Toggles the visibility of the add new city dialog.
+      if (visible) {
+        app.addDialog.classList.add('dialog-container--visible');
+      } else {
+        app.addDialog.classList.remove('dialog-container--visible');
+      }
+    };
+  */
 
 
 
@@ -93,22 +86,22 @@
       app.visibleCards[data.key] = card;
     }
 
-/*  효율적인 코딩을 위한 cost 줄이기_ 시간 이용
-    // Verifies the data provide is newer than what's already visible
-    // on the card, if it's not bail, if it is, continue and update the
-    // time saved in the card
-    var dataLastUpdated = new Date(data.created);
-    var cardLastUpdatedElem = card.querySelector('.card-last-updated');
-    var cardLastUpdatcled = cardLastUpdatedElem.textContent;
-    if (cardLastUpdated) {
-      cardLastUpdated = new Date(cardLastUpdated);
-      // Bail if the card has more recent data then the data
-      if (dataLastUpdated.getTime() < cardLastUpdated.getTime()) {
-        return;
+  /*  효율적인 코딩을 위한 cost 줄이기_ 시간 이용
+      // Verifies the data provide is newer than what's already visible
+      // on the card, if it's not bail, if it is, continue and update the
+      // time saved in the card
+      var dataLastUpdated = new Date(data.created);
+      var cardLastUpdatedElem = card.querySelector('.card-last-updated');
+      var cardLastUpdatcled = cardLastUpdatedElem.textContent;
+      if (cardLastUpdated) {
+        cardLastUpdated = new Date(cardLastUpdated);
+        // Bail if the card has more recent data then the data
+        if (dataLastUpdated.getTime() < cardLastUpdated.getTime()) {
+          return;
+        }
       }
-    }
-    cardLastUpdatedElem.textContent = data.created; 
-*/
+      cardLastUpdatedElem.textContent = data.created; 
+  */
 
 
     card.querySelector('.current .icon').classList.add(app.getIconClass(temp.weather));

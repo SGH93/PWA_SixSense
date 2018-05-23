@@ -17,11 +17,27 @@
   <link rel="apple-touch-icon" href="images/icons/icon-152x152.png">
   <meta name="msapplication-TileImage" content="images/icons/icon-144x144.png">
   <meta name="msapplication-TileColor" content="#2F3BA2">
+
+  <!-- Material Design Lite -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.orange-indigo.min.css">
+  <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+  
 </head>
 <body>
 
   <header class="header">
     <h1 class="header__title">Weather PWA</h1>
+    <div id="user-container">
+      <div hidden id="user-pic"></div>
+      <div hidden id="user-name"></div>
+      <button hidden id="sign-out" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color-text--white">
+        Sign-out
+      </button>
+      <button hidden id="sign-in" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color-text--white">
+        <i class="material-icons">account_circle</i>Sign-in
+      </button>
+    </div>
     <button id="butRefresh" class="headerButton" aria-label="Refresh"></button>
     <button id="butAdd" class="headerButton" aria-label="Add"></button>
   </header>
@@ -163,7 +179,26 @@
   <!-- Uncomment the line below when ready to test with fake data -->
  
   <script src="https://www.gstatic.com/firebasejs/5.0.1/firebase.js"></script>
+  <script>  
+  // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyAVPBxezvh6qI1iKhTJh3I7xCCfq_8UTDg",
+      authDomain: "pwa-sixsense.firebaseapp.com",
+      databaseURL: "https://pwa-sixsense.firebaseio.com",
+      projectId: "pwa-sixsense",
+      storageBucket: "pwa-sixsense.appspot.com",
+      messagingSenderId: "870211420843"
+    }; firebase.initializeApp(config);
+  </script>
+
+  <!-- Import and configure the Firebase SDK -->
+<!-- These scripts are made available when the app is served or deployed on Firebase Hosting -->
+<!-- If you do not want to serve/host your project using Firebase Hosting see https://firebase.google.com/docs/web/setup -->
+<script src="/__/firebase/4.1.3/firebase.js"></script>
+<script src="/__/firebase/init.js"></script>
+
   <script src="scripts/app.js" async></script>
+  <script src="scripts/main.js"></script>
   
   
 
