@@ -149,6 +149,7 @@
         if (response) {
           response.json().then(function updateFromCache(json) {
             var results = json;
+            console.log(1);
             app.updateForecastCard(results);
           });
         }
@@ -162,13 +163,16 @@
         if (request.status === 200) {
           var response = JSON.parse(request.response);
           var results = response;
+          console.log(2);
           app.updateForecastCard(results);
         }
       } else {
         //Return the initial weather forecast since no data is available.
+        console.log(3);
         app.updateForecastCard(initialWeatherForecast);
       }
     };
+    
     request.open('GET', url);
     request.send();
 
@@ -246,45 +250,45 @@
    * or when the user has not saved any cities. See startup code for more
    * discussion.
    */
-  var initialWeatherForecast = {
-    "weather" : {  
-      "current": {
-          "temp" :{
-            "degree": "",
-            "weather": "",
-            "label": "",
-            "time":"",
-            "created": ""
-          },
-    
-          "condition": {
-            "temp": {
-              "highest": "",
-              "lowest": "",
-              "sensible": ""
-            },
-            "dust": ""
-          }
+  var initialWeatherForecast = { 
+    "current": {
+      "temp" :{
+        "degree": "",
+        "weather": "",
+        "label": "",
+        "time":"",
+        "created": ""
+      },
+
+      "condition": {
+        "temp": {
+          "highest": "",
+          "lowest": "",
+          "sensible": ""
         },
-        "weekly": [
-          {"date": "","day": "","code": "", "high": "", "low": ""},
-          {"date": "","day": "","code": "", "high": "", "low": ""},
-          {"date": "","day": "","code": "", "high": "", "low": ""},
-          {"date": "","day": "","code": "", "high": "", "low": ""},
-          {"date": "","day": "","code": "", "high": "", "low": ""},
-          {"date": "","day": "","code": "", "high": "", "low": ""},
-          {"date": "","day": "","code": "", "high": "", "low": ""}
-        ]
-    }
+        "dust": ""
+      }
+    },
+    "weekly": [
+      {"date": "","day": "","code": "", "high": "", "low": ""},
+      {"date": "","day": "","code": "", "high": "", "low": ""},
+      {"date": "","day": "","code": "", "high": "", "low": ""},
+      {"date": "","day": "","code": "", "high": "", "low": ""},
+      {"date": "","day": "","code": "", "high": "", "low": ""},
+      {"date": "","day": "","code": "", "high": "", "low": ""},
+      {"date": "","day": "","code": "", "high": "", "low": ""}
+    ]
   };
   
 
 
-database.on('value',function(snapshot){
-  app.updateForecastCard(snapshot.val());
-});
+  database.on('value',function(snapshot){
+    console.log(4);
+    app.updateForecastCard(snapshot.val());
+  });
 
-   //app.getForecast();
+  app.getForecast();
+
    // TODO add service worker code here
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker
