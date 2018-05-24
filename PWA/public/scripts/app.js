@@ -5,7 +5,7 @@
 
 
   // Get a reference to the database service
-  var database = firebase.database().ref("/");
+  var database = firebase.database().ref("/weather");
 
   var app = {
     isLoading: true,
@@ -71,9 +71,9 @@
   app.updateForecastCard = function(data) {
     
 
-    var temp      = data.weather.current.temp;
-    var condition = data.weather.current.condition;
-    var weekly    = data.weather.weekly;
+    var temp      = data.current.temp;
+    var condition = data.current.condition;
+    var weekly    = data.weekly;
 
 
     var card = app.visibleCards[data.key];
@@ -138,7 +138,7 @@
 
   app.getForecast = function() {
 
-    var url = 'https://pwa-sixsense.firebaseio.com/.json'
+    var url = 'https://pwa-sixsense.firebaseio.com/weather/.json'
     if ('caches' in window) {
       /*
        * Check if the service worker has already cached this city's weather

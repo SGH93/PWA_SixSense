@@ -79,9 +79,9 @@ function () {
                 current["condition"]["temp"]["sensible"] = temp.text();    //오늘 체감기온
 
                 //dust
-                temp = $("li.finedust > span.level2 > em");
+                temp = $("li.finedust > span.level3 > em");
                 current["condition"]["dust"] = temp.text();//오늘 미세먼지
-
+               
                 //DataBase에 저장
                 DB_Ref.set(current);
             }

@@ -71,7 +71,7 @@ self.addEventListener('activate', function(e) {
 
 self.addEventListener('fetch', function(e) {
   console.log('[Service Worker] Fetch', e.request.url);
-  var dataUrl = 'https://pwa-sixsense.firebaseio.com/.json';
+  var dataUrl = 'https://pwa-sixsense.firebaseio.com/weather/.json';
   if (e.request.url.indexOf(dataUrl) > -1) {
     /*
      * When the request URL contains dataUrl, the app is asking for fresh
