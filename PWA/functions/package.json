@@ -11,14 +11,10 @@
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
-    "cheerio-httpcli": "^0.7.3",
-    "express": "^4.16.3",
-    "firebase": "^5.0.3",
+    "firebase": "^5.0.4",
     "firebase-admin": "^5.12.1",
     "firebase-functions": "^1.0.3",
-    "fs": "0.0.1-security",
-    "http": "0.0.0",
-    "request": "^2.85.0"
+    "request": "^2.87.0"
   },
   "devDependencies": {
     "eslint": "^4.12.0",
