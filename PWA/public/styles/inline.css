@@ -372,6 +372,13 @@ body {
     background-image: url("/images/partly-cloudy.png"); }
   .weather-forecast .icon.thunderstorms {
     background-image: url("/images/thunderstorm.png"); }
+  .weather-forecast .icon.yellow-dust {
+    background-image: url("/images/yellow-dust.png"); }
+  .weather-forecast .icon.cloudy_s_sunny {
+    background-image: url("/images/cloudy_s_sunny.png"); }
+  .weather-forecast .icon.cloudy-scattered-showers {
+    background-image: url("/images/cloudy-scattered-showers.png"); }
+
 
 @media (max-width: 450px) {
   .weather-forecast .date, .weather-forecast .description {

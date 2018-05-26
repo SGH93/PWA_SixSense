@@ -27,7 +27,7 @@ var func_get_C_data = function () {
 	var current = {
 			"temp" :{
 					"degree": " ",
-					"weather": "32",
+					"weather": "뇌우",
 					"label": " ",
 					"time":" ",
 					"created": " "
@@ -87,7 +87,7 @@ var func_get_C_data = function () {
             current["condition"]["temp"]["sensible"] = temp.text();    //오늘 체감기온
 
             //dust
-            temp = $("li.finedust > span.level3 > em");
+            temp = $("li.finedust > span > em");
             current["condition"]["dust"] = temp.text();//오늘 미세먼지
             
             //DataBase에 저장
@@ -100,34 +100,83 @@ var func_get_C_data = function () {
 exports.UpdateCurrentWthr = functions.database.ref("/weather/current")
 	.onWrite((change, context) => {
 	//data가 전부 삭제된 경우__성민 질문 
-	if (!change.after.exists()) return
+	if (!change.after.exists()) return null;
 	//데이터를 1분마다 네이버에서 크롤링
 	setTimeout(func_get_C_data, 1000 * 60);
-	return 
+	return null;
 });
 
-var push = function() {
-	
-	firebase.database().ref('/fcmTokens/tokens').once('value',function(allTokens){
-		
-    let tokens = [];
-    var currentTime = new Date();
-
-    // Listing all tokens.	
-    if (allTokens.val()) tokens = Object.keys(allTokens.val());
-
-    const message = {
-      notification: {
-        title: 'comeon',
-        body: currentTime.getMinutes()+' minutes' + currentTime.getSeconds()+' seconds',
-        icon: '/images/partly-cloudy.png'
-      }
-    };
-    firebase.database().ref("/fcmTokens/time").set(message.notification.body);
-    admin.messaging().sendToDevice(tokens, message);
-  });
+var getIconClass = function(weather) {
+  switch (weather) {
+    case '맑음': 
+      return 'clear';
+    case '비':
+      return 'rain';
+    case '뇌우': 
+    case '흐려져뇌우':
+      return 'thunderstorm'
+    case '소낙눈':  
+    case '흐려져눈':  
+      return 'snow';
+    case '안개': 
+      return 'fog';
+      //return 'windy';
+    case '흐림': 
+    case '흐려짐': 
+    case '구름많음':
+      return 'cloudy';
+    case '구름조금':  
+      return 'partly-cloudy';
+    case '진눈깨비':
+      return 'sleet';
+    case '흐린후갬': 
+    case '뇌우후갬': 
+    case '비후갬': 
+    case '눈후갬': 
+    case '진눈깨비후갬': 
+      return 'cloudy_s_sunny';
+    case '황사':  
+      return 'yellow-dust';        
+    case '소나기':
+      return 'scattered-showers';
+  }
+  return null;
 };
 
+var push = function() {
+   
+  firebase.database().ref('/fcmTokens/tokens').once('value',function(allTokens){
+     console.log('push sending...');
+   let tokens = [];
+   var currentTime = new Date();
+
+   // Listing all tokens.   
+   if (allTokens.val()) tokens = Object.keys(allTokens.val());
+
+   admin.database().ref('/weather/current').once('value', function(snapshot){    // get current weather
+     highest = snapshot.val().condition.temp.highest;    // highest temparature
+     lowest = snapshot.val().condition.temp.lowest;      // lowest temparature
+     dust = snapshot.val().condition.dust;               // dust
+     weather = snapshot.val().temp.weather;              // weather code
+
+    
+     let m_icon = '/images/' + getIconClass(weather) + '.png';   // appropriate icon for weather code
+     
+     console.log('['+ weather +'] 최고 : ' + highest +'℃, 최저 : '+ lowest + '℃, 미세먼지(보통) : '+dust+'µg/㎥'); // log test
+
+     const message = {   // push message setting
+       notification: {
+         title: 'Six Sense Weather ',
+         body: '['+ weather +'] 최고 : ' + highest +'℃, 최저 : '+ lowest + '℃,\n미세먼지(보통) : '+dust+'µg/㎥',
+         icon: m_icon,
+         click_action: 'https://pwa-sixsense.firebaseapp.com/'
+       }
+     };
+
+     admin.messaging().sendToDevice(tokens, message);    // send push message to devices
+   });
+ });
+};
 
 exports.PushMessage = functions.database.ref("/fcmTokens/time")
 	.onCreate((snapshot, context) => {
