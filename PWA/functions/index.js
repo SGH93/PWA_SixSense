@@ -23,7 +23,7 @@ var config = {
 var func_get_C_data = function () {
 	var url = "https://m.weather.naver.com/";
 
-  var weekly = [
+  var weekly_temp = [
     {"date": "","day": "","code": "", "high": "", "low": ""},
     {"date": "","day": "","code": "", "high": "", "low": ""},
     {"date": "","day": "","code": "", "high": "", "low": ""},
@@ -34,7 +34,17 @@ var func_get_C_data = function () {
     {"date": "","day": "","code": "", "high": "", "low": ""},
     {"date": "","day": "","code": "", "high": "", "low": ""},
     {"date": "","day": "","code": "", "high": "", "low": ""}
-  ]
+]
+
+var weekly = [
+    {"date": "","day": "","code": "", "high": "", "low": ""},
+    {"date": "","day": "","code": "", "high": "", "low": ""},
+    {"date": "","day": "","code": "", "high": "", "low": ""},
+    {"date": "","day": "","code": "", "high": "", "low": ""},
+    {"date": "","day": "","code": "", "high": "", "low": ""},
+    {"date": "","day": "","code": "", "high": "", "low": ""},
+    {"date": "","day": "","code": "", "high": "", "low": ""}
+]
 
 	var current = {
 			"temp" :{
@@ -109,22 +119,27 @@ var func_get_C_data = function () {
 
         //주간 날씨 데이터 크롤링
         $(".weekly_item").each(function(index,item){              
-            weekly[num]["day"] = $(this).find('.day').text();   //요일           
+            weekly_temp[num]["day"] = $(this).find('.day').text();   //요일           
             
             if(num == 0 || num == 1){   //날짜
-                weekly[num]["date"] = $(this).find('em.sub.type_num').text();   
+                weekly_temp[num]["date"] = $(this).find('em.sub.type_num').text();   
             }            
             else{
-                weekly[num]["date"] = $(this).find('div.weekly_item_date > em.sub').text();
+                weekly_temp[num]["date"] = $(this).find('div.weekly_item_date > em.sub').text();
             }
             
-            weekly[num]["code"]= $(this).find('div.weekly_item_weather > div:nth-child(1) > div').text();   //날씨 상태
-            weekly[num]["low"]= $(this).find('.low > .degree_code').text();     //최저기온
-            weekly[num]["high"]= $(this).find('.high > .degree_code').text();   //최고기온
+            weekly_temp[num]["code"]= $(this).find('div.weekly_item_weather > div:nth-child(1) > div').text();   //날씨 상태
+            weekly_temp[num]["low"]= $(this).find('.low > .degree_code').text();     //최저기온
+            weekly_temp[num]["high"]= $(this).find('.high > .degree_code').text();   //최고기온
             num++;  
             dd++;            
         });
-        weekly[0]["date"] = "오늘";
+        weekly_temp[0]["date"] = "오늘";
+        
+
+        for(var i=0; i<7; i++){
+            weekly[i] = weekly_temp[i];
+        }
         
         //DataBase에 저장
         DB_Ref.set(current);
