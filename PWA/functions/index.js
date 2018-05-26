@@ -1,49 +1,53 @@
 /*eslint prefer-arrow-callback: 0*/
 //Import and initialize the Firebase Admin SDK.
 const admin = require('firebase-admin');
-admin.initializeApp();
 //Import the Firebase SDK for Google Cloud Functions.
 const functions = require('firebase-functions');
-const request = require('request'),
-      cheerio = require('cheerio'),
-      firebase = require('firebase');
+const request   = require('request');
+const cheerio   = require('cheerio');
+const firebase  = require('firebase');
+const schedule  = require('node-schedule');
+admin.initializeApp();
 
-var url = "https://m.weather.naver.com/";
-
-
-var current = {
-    "temp" :{
-        "degree": " ",
-        "weather": "32",
-        "label": " ",
-        "time":" ",
-        "created": " "
-    },
-
-    "condition": {
-        "temp": {
-        "highest": " ",
-        "lowest": " ",
-        "sensible": " "
-        },
-        "dust": " "
-    }
-};
 
 var config = {
-    apiKey: "AIzaSyAVPBxezvh6qI1iKhTJh3I7xCCfq_8UTDg",
-    authDomain: "pwa-sixsense.firebaseapp.com",
-    databaseURL: "https://pwa-sixsense.firebaseio.com",
-    projectId: "pwa-sixsense",
-    storageBucket: "pwa-sixsense.appspot.com",
-    messagingSenderId: "870211420843"
+	apiKey: "AIzaSyAVPBxezvh6qI1iKhTJh3I7xCCfq_8UTDg",
+	authDomain: "pwa-sixsense.firebaseapp.com",
+	databaseURL: "https://pwa-sixsense.firebaseio.com",
+	projectId: "pwa-sixsense",
+	storageBucket: "pwa-sixsense.appspot.com",
+	messagingSenderId: "870211420843"
 }; firebase.initializeApp(config);
 
-
-var DB_Ref = firebase.database().ref("/weather/current");
-
+//완성후 수정 정리 
 var func_get_C_data = function () {
-    request(url, (err, res, html) => {
+	var url = "https://m.weather.naver.com/";
+
+
+	var current = {
+			"temp" :{
+					"degree": " ",
+					"weather": "32",
+					"label": " ",
+					"time":" ",
+					"created": " "
+			},
+
+			"condition": {
+					"temp": {
+					"highest": " ",
+					"lowest": " ",
+					"sensible": " "
+					},
+					"dust": " "
+			}
+	};
+
+
+
+	var DB_Ref = firebase.database().ref("/weather/current");
+	
+	request(url, (err, res, html) => {
         if (!err) {
             var $ = cheerio.load(html);       
             var d = new Date(); 
@@ -94,21 +98,51 @@ var func_get_C_data = function () {
 
 
 exports.UpdateCurrentWthr = functions.database.ref("/weather/current")
-    .onWrite((change, context) => {
-    //data가 전부 삭제된 경우
-    if (!change.after.exists())
-        return null;
-    //데이터를 5분마다 네이버에서 크롤링
-    setTimeout(func_get_C_data, 1000 * 60);
-    return null;
+	.onWrite((change, context) => {
+	//data가 전부 삭제된 경우__성민 질문 
+	if (!change.after.exists()) return
+	//데이터를 1분마다 네이버에서 크롤링
+	setTimeout(func_get_C_data, 1000 * 60);
+	return 
+});
+
+var push = function() {
+	
+	firebase.database().ref('/fcmTokens/tokens').once('value',function(allTokens){
+		
+    let tokens = [];
+    var currentTime = new Date();
+
+    // Listing all tokens.	
+    if (allTokens.val()) tokens = Object.keys(allTokens.val());
+
+    const message = {
+      notification: {
+        title: 'comeon',
+        body: currentTime.getMinutes()+' minutes' + currentTime.getSeconds()+' seconds',
+        icon: '/images/partly-cloudy.png'
+      }
+    };
+    firebase.database().ref("/fcmTokens/time").set(message.notification.body);
+    admin.messaging().sendToDevice(tokens, message);
+  });
+
+  
+};
+
+
+exports.PushMessage = functions.database.ref("/fcmTokens/time")
+	.onCreate((snapshot, context) => {
+    let rule = new schedule.RecurrenceRule();
+    rule.second = 30;
+    let pushing = schedule.scheduleJob(rule, push);
+    return
 });
 
 
 
-// Sends a notifications to all users when a new message is posted.
+/*
 exports.sendNotifications = functions.database.ref('/start').onCreate(snapshot => {
-    // Notification details.
-    const text = snapshot.val().text;
   
     // Get the list of device tokens.
     return firebase.database().ref('/fcmTokens').once('value').then(allTokens => {
@@ -141,4 +175,4 @@ exports.sendNotifications = functions.database.ref('/start').onCreate(snapshot =
     })
   
   });
-  
+*/
