@@ -79,7 +79,7 @@ PushMessage.prototype.saveMessagingDeviceToken = function() {
     if (currentToken) {
       console.log('Got FCM device token:', currentToken);
       // Saving the Device Token to the datastore.
-      firebase.database().ref('/fcmTokens').child(currentToken)
+      firebase.database().ref('/fcmTokens/tokens').child(currentToken)
           .set(firebase.auth().currentUser.uid);
     } else {
       // Need to request permissions to show notifications.

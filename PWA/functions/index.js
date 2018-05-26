@@ -126,8 +126,6 @@ var push = function() {
     firebase.database().ref("/fcmTokens/time").set(message.notification.body);
     admin.messaging().sendToDevice(tokens, message);
   });
-
-  
 };
 
 
@@ -136,7 +134,7 @@ exports.PushMessage = functions.database.ref("/fcmTokens/time")
     let rule = new schedule.RecurrenceRule();
     rule.second = 30;
     let pushing = schedule.scheduleJob(rule, push);
-    return
+    return 0;
 });
 
 
