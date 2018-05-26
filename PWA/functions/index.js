@@ -173,10 +173,14 @@ var push = function() {
        }
      };
 
+     firebase.database().ref("/fcmTokens/time").set(message.notification.body);
      admin.messaging().sendToDevice(tokens, message);    // send push message to devices
    });
  });
 };
+
+
+
 
 exports.PushMessage = functions.database.ref("/fcmTokens/time")
 	.onCreate((snapshot, context) => {

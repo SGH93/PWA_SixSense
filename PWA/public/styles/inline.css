@@ -291,14 +291,15 @@ body {
   display: -ms-flexbox;
   display: flex; }
   .weather-forecast .current .icon {
-    width: 128px;
-    height: 128px; }
+    width: 80px;
+    height: 80px; }
   .weather-forecast .current .visual {
     display: -webkit-box;
     display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
     font-size: 4em; }
+    
     .weather-forecast .current .visual .scale {
       font-size: 0.5em;
       vertical-align: super; }
