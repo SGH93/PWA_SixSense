@@ -154,29 +154,6 @@
     </div>
   </main>
 
-  <div class="dialog-container">
-    <div class="dialog">
-      <div class="dialog-title">Add new city</div>
-      <div class="dialog-body">
-        <select id="selectCityToAdd">
-          <!-- Values map to Yahoo Weather API Where On Earth Identifiers (WOEIDs).
-               https://developer.yahoo.com/weather/documentation.html#req -->
-          <option value="2357536">Austin, TX</option>
-          <option value="2367105">Boston, MA</option>
-          <option value="2379574">Chicago, IL</option>
-          <option value="2459115">New York, NY</option>
-          <option value="2475687">Portland, OR</option>
-          <option value="2487956">San Francisco, CA</option>
-          <option value="2490383">Seattle, WA</option>
-        </select>
-      </div>
-      <div class="dialog-buttons">
-        <button id="butAddCity" class="button">Add</button>
-        <button id="butAddCancel" class="button">Cancel</button>
-      </div>
-    </div>
-  </div>
-
   <div class="loader">
     <svg viewBox="0 0 32 32" width="32" height="32">
       <circle id="spinner" cx="16" cy="16" r="14" fill="none"></circle>
@@ -198,16 +175,14 @@
   </script>
 
   <!-- Import and configure the Firebase SDK -->
-<!-- These scripts are made available when the app is served or deployed on Firebase Hosting -->
-<!-- If you do not want to serve/host your project using Firebase Hosting see https://firebase.google.com/docs/web/setup -->
-<script src="/__/firebase/4.1.3/firebase.js"></script>
-<script src="/__/firebase/init.js"></script>
+  <!-- These scripts are made available when the app is served or deployed on Firebase Hosting -->
+  <!-- If you do not want to serve/host your project using Firebase Hosting see https://firebase.google.com/docs/web/setup -->
+  <script src="/__/firebase/4.1.3/firebase.js"></script>
+  <script src="/__/firebase/init.js"></script>
 
-  <script src="scripts/app.js" async></script>
-  <script src="scripts/main.js"></script>
+  <script src="scripts/parsing.js" async></script>
+  <script src="scripts/push.js"></script>
   
   
-
-
 </body>
 </html>

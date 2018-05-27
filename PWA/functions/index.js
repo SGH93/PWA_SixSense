@@ -62,13 +62,12 @@ var func_get_C_data = function () {
     if (!err) {
         var $ = cheerio.load(html);       
         var d = new Date(); 
-        var weekly = weather.weekly;
         var num = 0;
 //크롤링
     //temp
         //degree
         var temp = $("em.degree_code.full"); //현재 온도
-        current["temp"]["degree"] = temp.text();                
+        weather.current["temp"]["degree"] = temp.text();                
         
         //weather
         //temp = $("div.weather_set_summary"); //날씨 텍스트
@@ -76,52 +75,52 @@ var func_get_C_data = function () {
         
         //label
         temp = $("div.section_location > a.title._cnLnbLinktoMap > strong")
-        current["temp"]["label"] = temp.text(); //위치
+        weather.current["temp"]["label"] = temp.text(); //위치
 
         //time
-        current["temp"]["time"] = d.getFullYear().toString()+"/"+(d.getMonth()+1).toString() +"/" + d.getDate().toString() +"   " + 
+        weather.current["temp"]["time"] = d.getFullYear().toString()+"/"+(d.getMonth()+1).toString() +"/" + d.getDate().toString() +"   " + 
                                 ((d.getUTCHours()+9)%24).toString() +" : " + d.getMinutes().toString() + " : " + d.getSeconds().toString();
 
         //created
         temp = $("div.card.card_now > span.text.text_location")
-        current["temp"]["created"] = temp.text(); // 날씨 발표 시간
+        weather.current["temp"]["created"] = temp.text(); // 날씨 발표 시간
 
     //condition
         //temp:highest
         temp = $("span.day_high > em.degree_code");
-        current["condition"]["temp"]["highest"] = temp.text();   //오늘 최고기온
+        weather.current["condition"]["temp"]["highest"] = temp.text();   //오늘 최고기온
 
         //temp:lowest
         temp = $("span.day_low > em.degree_code");
-        current["condition"]["temp"]["lowest"] = temp.text();    //오늘 최저기온
+        weather.current["condition"]["temp"]["lowest"] = temp.text();    //오늘 최저기온
         
         //temp:sensible
         temp = $("span.day_feel > em.degree_code");
-        current["condition"]["temp"]["sensible"] = temp.text();    //오늘 체감기온
+        weather.current["condition"]["temp"]["sensible"] = temp.text();    //오늘 체감기온
 
         //dust
         temp = $("li.finedust > span > em");
-        current["condition"]["dust"] = temp.text();//오늘 미세먼지
+        weather.current["condition"]["dust"] = temp.text();//오늘 미세먼지
 
        
 
         //주간 날씨 데이터 크롤링
         $(".weekly_item").each(function(index,item){                
-          weekly[num]["day"] = $(this).find('.day').text();   //요일           
+          weather.weekly[num]["day"] = $(this).find('.day').text();   //요일           
             
             if(num === 0 || num === 1){   //날짜
-                weekly[num]["date"] = $(this).find('em.sub.type_num').text();   
+              weather.weekly[num]["date"] = $(this).find('em.sub.type_num').text();   
             }            
             else{
-                weekly[num]["date"] = $(this).find('div.weekly_item_date > em.sub').text();
+              weather.weekly[num]["date"] = $(this).find('div.weekly_item_date > em.sub').text();
             }
             
-            weekly[num]["code"]= $(this).find('div.weekly_item_weather > div:nth-child(1) > div').text();   //날씨 상태
-            weekly[num]["low"]= $(this).find('.low > .degree_code').text();     //최저기온
-            weekly[num]["high"]= $(this).find('.high > .degree_code').text();   //최고기온
+            weather.weekly[num]["code"]= $(this).find('div.weekly_item_weather > div:nth-child(1) > div').text();   //날씨 상태
+            weather.weekly[num]["low"]= $(this).find('.low > .degree_code').text();     //최저기온
+            weather.weekly[num]["high"]= $(this).find('.high > .degree_code').text();   //최고기온
             num++;             
         });
-        weekly[0]["date"] = "오늘";
+        weather.weekly[0]["date"] = "오늘";
         
         //DataBase에 저장
         DB_Ref.set(weather);
@@ -173,14 +172,14 @@ var push = function() {
     let tokens = [];
 
     // Listing all tokens.   
-    if (allTokens.val()) tokens = Object.keys(snapshot.val().fcmTokens.tokens);
+    if (snapshot.val().fcmTokens.tokens) tokens = Object.keys(snapshot.val().fcmTokens.tokens);
     else return null;
 
     // get current weather
-    let highest = snapshot.val().condition.temp.highest;    // highest temparature
-    let lowest = snapshot.val().condition.temp.lowest;      // lowest temparature
-    let dust = snapshot.val().condition.dust;               // dust
-    let weather = snapshot.val().temp.weather;              // weather code
+    let highest = snapshot.val().weather.current.condition.temp.highest;    // highest temparature
+    let lowest = snapshot.val().weather.current.condition.temp.lowest;      // lowest temparature
+    let dust = snapshot.val().weather.current.condition.dust;               // dust
+    let weather = snapshot.val().weather.current.temp.weather;              // weather code
     
     if(dust<=30)
       dust_state = '좋음';
