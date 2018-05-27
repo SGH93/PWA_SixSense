@@ -3,21 +3,20 @@
 (function() {
   'use strict';
 
-
-
-  // Get a reference to the database service
-  var database = firebase.database().ref("/weather");
-
   var app = {
     isLoading: true,
     visibleCards: {},
     spinner: document.querySelector('.loader'),
     cardTemplate: document.querySelector('.cardTemplate'),
     container: document.querySelector('.main'),
-    //addDialog: document.querySelector('.dialog-container'),
   };
 
-   
+  // Get a reference to the database service
+  var database = firebase.database().ref("/weather");
+  database.on('value',function(snapshot){
+    console.log(4);
+    app.updateForecastCard(snapshot.val());
+  });
 
   document.getElementById('butRefresh').addEventListener('click', function() {
     // Refresh all of the forecasts
@@ -25,45 +24,9 @@
   });
 
 
-  /*도시추가 및 지역 선택 기능  졸작으로 하자.
-    document.getElementById('butAdd').addEventListener('click', function() {
-      // Open/show the add new city dialog
-      app.toggleAddDialog(true);
-    });
-
-    document.getElementById('butAddCity').addEventListener('click', function() {
-      // Add the newly selected city
-      var select = document.getElementById('selectCityToAdd');
-      var selected = select.options[select.selectedIndex];
-      var key = selected.value;
-      var label = selected.textContent;
-      if (!app.selectedCities) {
-        app.selectedCities = [];
-      }
-      app.getForecast(key, label);
-      app.selectedCities.push({key: key, label: label});
-      app.saveSelectedCities();
-      app.toggleAddDialog(false);
-    });
-
-    document.getElementById('butAddCancel').addEventListener('click', function() {
-      // Close the add new city dialog
-      app.toggleAddDialog(false);
-    });
-
-    app.toggleAddDialog = function(visible) {
-      //Methods to update/refresh the UI
-      // Toggles the visibility of the add new city dialog.
-      if (visible) {
-        app.addDialog.classList.add('dialog-container--visible');
-      } else {
-        app.addDialog.classList.remove('dialog-container--visible');
-      }
-    };
-  */
-
-
-
+  document.getElementById('butAdd').addEventListener('click', function() {
+    alert('업데이트 예정입니다.^^7');
+  });
 
   // Updates a weather card with the latest weather forecast. If the card
   // doesn't already exist, it's cloned from the template.
@@ -79,34 +42,14 @@
     if (!card) {
       card = app.cardTemplate.cloneNode(true);
       card.classList.remove('cardTemplate');
-      //card.querySelector('.location').textContent = data.label;
       card.removeAttribute('hidden');
-      
       app.container.appendChild(card);
       app.visibleCards[data.key] = card;
     }
 
-    /*  효율적인 코딩을 위한 cost 줄이기_ 시간 이용
-        // Verifies the data provide is newer than what's already visible
-        // on the card, if it's not bail, if it is, continue and update the
-        // time saved in the card
-        var dataLastUpdated = new Date(data.created);
-        var cardLastUpdatedElem = card.querySelector('.card-last-updated');
-        var cardLastUpdatcled = cardLastUpdatedElem.textContent;
-        if (cardLastUpdated) {
-          cardLastUpdated = new Date(cardLastUpdated);
-          // Bail if the card has more recent data then the data
-          if (dataLastUpdated.getTime() < cardLastUpdated.getTime()) {
-            return;
-          }
-        }
-        cardLastUpdatedElem.textContent = data.created; 
-    */
-
-
     card.querySelector('.current .icon').classList.add(app.getIconClass(temp.weather));
     card.querySelector('.location').textContent                              = temp.label;
-    //card.querySelector('.description').textContent                         = temp.weather;
+    card.querySelector('.description').textContent                         = temp.weather;
     card.querySelector('.date').textContent                                  = temp.time;
     card.querySelector('.current .temperature .value').textContent           = temp.degree;
     card.querySelector('.current .description .dust .value').textContent     = condition.dust;
@@ -251,13 +194,6 @@
     ]
   };
   
-
-
-  database.on('value',function(snapshot){
-    console.log(4);
-    app.updateForecastCard(snapshot.val());
-  });
-
   app.getForecast();
 
    // TODO add service worker code here

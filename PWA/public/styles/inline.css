@@ -119,6 +119,7 @@ body {
     justify-content: flex-end;
     padding-right: 90px;
   }
+  /*
   .header #user-container #user-pic {
     top: -3px;
     position: relative;
@@ -136,6 +137,7 @@ body {
     padding-right: 10px;
     padding-left: 20px;
   }
+  */
   .header #butRefresh {
     background: url(/images/ic_refresh_white_24px.svg) center center no-repeat; }
   .header #butAdd {

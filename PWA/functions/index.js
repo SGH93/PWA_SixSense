@@ -73,7 +73,7 @@ var func_get_C_data = function () {
         //weather
         //temp = $("div.weather_set_summary"); //날씨 텍스트
         //current["temp"]["weather"] = temp.text();         
-
+        
         //label
         temp = $("div.section_location > a.title._cnLnbLinktoMap > strong")
         current["temp"]["label"] = temp.text(); //위치
