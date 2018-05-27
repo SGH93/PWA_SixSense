@@ -299,10 +299,28 @@ body {
     display: -ms-flexbox;
     display: flex;
     font-size: 4em; }
-    
-    .weather-forecast .current .visual .scale {
-      font-size: 0.5em;
-      vertical-align: super; }
+    .weather-forecast .current .visual .temperature {
+      text-align: center;
+      height: 100px;
+      flex-grow:  1;
+      }
+      .weather-forecast .current .visual .value {
+        line-height: 100px;
+        vertical-align: middle;
+        }
+      .weather-forecast .current .visual .scale {
+        font-size: 0.5em;
+        vertical-align: super; }
+
+    .weather-forecast .current .description .dust {
+      height: 25px; }
+    .weather-forecast .current .description .sensible {
+      height: 25px; }
+    .weather-forecast .current .description .highest {
+      height: 25px; }
+    .weather-forecast .current .description .lowest {
+      height: 25px; }
+
   .weather-forecast .current .visual, .weather-forecast .current .description {
     box-flex: 1;
     -webkit-flex-grow: 1;

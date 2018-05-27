@@ -23,56 +23,47 @@ var config = {
 var func_get_C_data = function () {
 	var url = "https://m.weather.naver.com/";
 
-  var weekly_temp = [
-    {"date": "","day": "","code": "", "high": "", "low": ""},
-    {"date": "","day": "","code": "", "high": "", "low": ""},
-    {"date": "","day": "","code": "", "high": "", "low": ""},
-    {"date": "","day": "","code": "", "high": "", "low": ""},
-    {"date": "","day": "","code": "", "high": "", "low": ""},
-    {"date": "","day": "","code": "", "high": "", "low": ""},
-    {"date": "","day": "","code": "", "high": "", "low": ""},
-    {"date": "","day": "","code": "", "high": "", "low": ""},
-    {"date": "","day": "","code": "", "high": "", "low": ""},
-    {"date": "","day": "","code": "", "high": "", "low": ""}
-]
+	var weather = {
+    "current": {  
+      "temp" :{
+        "degree": " ",
+        "weather": "뇌우",
+        "label": " ",
+        "time":" ",
+        "created": " "
+      },
 
-var weekly = [
-    {"date": "","day": "","code": "", "high": "", "low": ""},
-    {"date": "","day": "","code": "", "high": "", "low": ""},
-    {"date": "","day": "","code": "", "high": "", "low": ""},
-    {"date": "","day": "","code": "", "high": "", "low": ""},
-    {"date": "","day": "","code": "", "high": "", "low": ""},
-    {"date": "","day": "","code": "", "high": "", "low": ""},
-    {"date": "","day": "","code": "", "high": "", "low": ""}
-]
-
-	var current = {
-			"temp" :{
-					"degree": " ",
-					"weather": "뇌우",
-					"label": " ",
-					"time":" ",
-					"created": " "
-			},
-
-			"condition": {
-					"temp": {
-					"highest": " ",
-					"lowest": " ",
-					"sensible": " "
-					},
-					"dust": " "
-			}
+      "condition": {
+          "temp": {
+            "highest": " ",
+            "lowest": " ",
+            "sensible": " "
+          },
+          "dust": " "
+      }
+    },
+    "weekly": [
+      {"date": "","day": "","code": "", "high": "", "low": ""},
+      {"date": "","day": "","code": "", "high": "", "low": ""},
+      {"date": "","day": "","code": "", "high": "", "low": ""},
+      {"date": "","day": "","code": "", "high": "", "low": ""},
+      {"date": "","day": "","code": "", "high": "", "low": ""},
+      {"date": "","day": "","code": "", "high": "", "low": ""},
+      {"date": "","day": "","code": "", "high": "", "low": ""},
+      {"date": "","day": "","code": "", "high": "", "low": ""},
+      {"date": "","day": "","code": "", "high": "", "low": ""},
+      {"date": "","day": "","code": "", "high": "", "low": ""}
+    ]
 	};
 
-
-
-	var DB_Ref = firebase.database().ref("/weather/current");
+	var DB_Ref = firebase.database().ref("/weather");
 	
 	request(url, (err, res, html) => {
     if (!err) {
         var $ = cheerio.load(html);       
         var d = new Date(); 
+        var weekly = weather.weekly;
+        var num = 0;
 //크롤링
     //temp
         //degree
@@ -88,7 +79,7 @@ var weekly = [
         current["temp"]["label"] = temp.text(); //위치
 
         //time
-        current["temp"]["time"] = d.getFullYear().toString()+"/"+(d.getMonth()+1).toString() +"/" + d.getDate().toString() +"  " + 
+        current["temp"]["time"] = d.getFullYear().toString()+"/"+(d.getMonth()+1).toString() +"/" + d.getDate().toString() +"   " + 
                                 ((d.getUTCHours()+9)%24).toString() +" : " + d.getMinutes().toString() + " : " + d.getSeconds().toString();
 
         //created
@@ -112,50 +103,32 @@ var weekly = [
         temp = $("li.finedust > span > em");
         current["condition"]["dust"] = temp.text();//오늘 미세먼지
 
-        var temp_date = new Date();
-        var dd = temp_date.getDate();
-        var mm = temp_date.getMonth()+1;
-        var num = 0;
+       
 
         //주간 날씨 데이터 크롤링
-        $(".weekly_item").each(function(index,item){              
-            weekly_temp[num]["day"] = $(this).find('.day').text();   //요일           
+        $(".weekly_item").each(function(index,item){                
+          weekly[num]["day"] = $(this).find('.day').text();   //요일           
             
-            if(num == 0 || num == 1){   //날짜
-                weekly_temp[num]["date"] = $(this).find('em.sub.type_num').text();   
+            if(num === 0 || num === 1){   //날짜
+                weekly[num]["date"] = $(this).find('em.sub.type_num').text();   
             }            
             else{
-                weekly_temp[num]["date"] = $(this).find('div.weekly_item_date > em.sub').text();
+                weekly[num]["date"] = $(this).find('div.weekly_item_date > em.sub').text();
             }
             
-            weekly_temp[num]["code"]= $(this).find('div.weekly_item_weather > div:nth-child(1) > div').text();   //날씨 상태
-            weekly_temp[num]["low"]= $(this).find('.low > .degree_code').text();     //최저기온
-            weekly_temp[num]["high"]= $(this).find('.high > .degree_code').text();   //최고기온
-            num++;  
-            dd++;            
+            weekly[num]["code"]= $(this).find('div.weekly_item_weather > div:nth-child(1) > div').text();   //날씨 상태
+            weekly[num]["low"]= $(this).find('.low > .degree_code').text();     //최저기온
+            weekly[num]["high"]= $(this).find('.high > .degree_code').text();   //최고기온
+            num++;             
         });
-        weekly_temp[0]["date"] = "오늘";
-        
-
-        for(var i=0; i<7; i++){
-            weekly[i] = weekly_temp[i];
-        }
+        weekly[0]["date"] = "오늘";
         
         //DataBase에 저장
-        DB_Ref.set(current);
+        DB_Ref.set(weather);
     }
   });
 }
 
-
-exports.UpdateCurrentWthr = functions.database.ref("/weather/current")
-	.onWrite((change, context) => {
-	//data가 전부 삭제된 경우__성민 질문 
-	if (!change.after.exists()) return null;
-	//데이터를 1분마다 네이버에서 크롤링
-	setTimeout(func_get_C_data, 1000 * 60);
-	return null;
-});
 
 var getIconClass = function(weather) {
   switch (weather) {
@@ -195,39 +168,49 @@ var getIconClass = function(weather) {
 };
 
 var push = function() {
-   
-  firebase.database().ref('/fcmTokens/tokens').once('value',function(allTokens){
-     console.log('push sending...');
-   let tokens = [];
-   var currentTime = new Date();
+  firebase.database().ref('/').once('value',function(snapshot){
+    console.log('push sending...');
+    let tokens = [];
 
-   // Listing all tokens.   
-   if (allTokens.val()) tokens = Object.keys(allTokens.val());
+    // Listing all tokens.   
+    if (allTokens.val()) tokens = Object.keys(snapshot.val().fcmTokens.tokens);
+    else return null;
 
-   admin.database().ref('/weather/current').once('value', function(snapshot){    // get current weather
-     highest = snapshot.val().condition.temp.highest;    // highest temparature
-     lowest = snapshot.val().condition.temp.lowest;      // lowest temparature
-     dust = snapshot.val().condition.dust;               // dust
-     weather = snapshot.val().temp.weather;              // weather code
-
+    // get current weather
+    let highest = snapshot.val().condition.temp.highest;    // highest temparature
+    let lowest = snapshot.val().condition.temp.lowest;      // lowest temparature
+    let dust = snapshot.val().condition.dust;               // dust
+    let weather = snapshot.val().temp.weather;              // weather code
     
-     let m_icon = '/images/' + getIconClass(weather) + '.png';   // appropriate icon for weather code
-     
-     console.log('['+ weather +'] 최고 : ' + highest +'℃, 최저 : '+ lowest + '℃, 미세먼지(보통) : '+dust+'µg/㎥'); // log test
+    if(dust<=30)
+      dust_state = '좋음';
+    else if(dust>30 && dust<=80)
+      dust_state = '보통';
+    else if(dust>80 && dust<=150)
+      dust_state = '나쁨';
+    else if(dust>150)
+      dust_state = '매우나쁨';
 
-     const message = {   // push message setting
-       notification: {
-         title: 'Six Sense Weather ',
-         body: '['+ weather +'] 최고 : ' + highest +'℃, 최저 : '+ lowest + '℃,\n미세먼지(보통) : '+dust+'µg/㎥',
-         icon: m_icon,
-         click_action: 'https://pwa-sixsense.firebaseapp.com/'
-       }
-     };
+    // appropriate icon for weather code  
+    let m_icon = '/images/' + getIconClass(weather) + '.png'; 
+    let message_body = '['+weather+'] 최고 : ' + highest +'℃, 최저 : ' + lowest
+                            + '℃,\n미세먼지(' + dust_state + ') : '+dust+'µg/㎥';
 
-     firebase.database().ref("/fcmTokens/time").set(message.notification.body);
-     admin.messaging().sendToDevice(tokens, message);    // send push message to devices
+    console.log('['+ weather +'] 최고 : ' + highest +'℃, 최저 : '+ lowest + '℃, 미세먼지(보통) : '+dust+'µg/㎥'); // log test
+
+    const message = {   // push message setting
+      notification: {
+        title: 'Six Sense Weather ',
+        body: message_body,
+        icon: m_icon,
+        click_action: 'https://pwa-sixsense.firebaseapp.com/'
+      }
+    };
+
+    //확인용 
+    firebase.database().ref("/fcmTokens/time").set(message.notification.body);
+    return admin.messaging().sendToDevice(tokens, message);    // send push message to devices
    });
- });
 };
 
 
@@ -242,39 +225,11 @@ exports.PushMessage = functions.database.ref("/fcmTokens/time")
 });
 
 
-
-/*
-exports.sendNotifications = functions.database.ref('/start').onCreate(snapshot => {
-  
-    // Get the list of device tokens.
-    return firebase.database().ref('/fcmTokens').once('value').then(allTokens => {
-      if (allTokens.val()) {
-        // Listing all tokens.
-        tokens = Object.keys(allTokens.val());
-  
-        setInterval(function() {
-          var currentTime = new Date();
-          firebase.database().ref('/fcmTokens').once('value',function(allTokens){
-            if (allTokens.val()) {
-              tokens = Object.keys(allTokens.val());
-            }
-          });
-          const payload2 = {
-            notification: {
-              title: 'comeon',
-              body: currentTime.getMinutes()+' minutes' + currentTime.getSeconds()+' seconds',
-              icon: '/images/partly-cloudy2.png'
-            }
-          };
-          //if(currentTime.getSeconds()===0)
-          admin.messaging().sendToDevice(tokens, payload2);
-        }, 1000*3);
-        
-        // Send notifications to all tokens.
-        return null;
-      }
-      return {results: []};
-    })
-  
-  });
-*/
+exports.UpdateCurrentWthr = functions.database.ref("/weather/current")
+	.onWrite((change, context) => {
+	//data가 전부 삭제된 경우__성민 질문 
+	if (!change.after.exists()) return null;
+	//데이터를 1분마다 네이버에서 크롤링
+	setTimeout(func_get_C_data, 1000 * 60);
+	return null;
+});
