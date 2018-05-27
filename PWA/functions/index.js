@@ -19,20 +19,27 @@ var config = {
 	messagingSenderId: "870211420843"
 }; firebase.initializeApp(config);
 
+
+
+
 //완성후 수정 정리 
 var func_get_C_data = function () {
-	var url = "https://m.weather.naver.com/";
 
-	var weather = {
+	var DB_Ref = firebase.database().ref("/weather");
+  var url = "https://m.weather.naver.com/";
+  var url2 = "https://weather.naver.com/rgn/townWetr.nhn";
+
+
+  var weather = {
     "current": {  
       "temp" :{
         "degree": " ",
-        "weather": "뇌우",
+        "weather": "",
         "label": " ",
         "time":" ",
         "created": " "
       },
-
+  
       "condition": {
           "temp": {
             "highest": " ",
@@ -54,25 +61,21 @@ var func_get_C_data = function () {
       {"date": "","day": "","code": "", "high": "", "low": ""},
       {"date": "","day": "","code": "", "high": "", "low": ""}
     ]
-	};
+  };
 
-	var DB_Ref = firebase.database().ref("/weather");
-	
 	request(url, (err, res, html) => {
     if (!err) {
         var $ = cheerio.load(html);       
         var d = new Date(); 
         var num = 0;
-//크롤링
-    //temp
-        //degree
+    
+
+     //크롤링
+        //temp
+          //degree
         var temp = $("em.degree_code.full"); //현재 온도
         weather.current["temp"]["degree"] = temp.text();                
-        
-        //weather
-        //temp = $("div.weather_set_summary"); //날씨 텍스트
-        //current["temp"]["weather"] = temp.text();         
-        
+      
         //label
         temp = $("div.section_location > a.title._cnLnbLinktoMap > strong")
         weather.current["temp"]["label"] = temp.text(); //위치
@@ -81,11 +84,11 @@ var func_get_C_data = function () {
         weather.current["temp"]["time"] = d.getFullYear().toString()+"/"+(d.getMonth()+1).toString() +"/" + d.getDate().toString() +"   " + 
                                 ((d.getUTCHours()+9)%24).toString() +" : " + d.getMinutes().toString() + " : " + d.getSeconds().toString();
 
-        //created
+          //created
         temp = $("div.card.card_now > span.text.text_location")
         weather.current["temp"]["created"] = temp.text(); // 날씨 발표 시간
 
-    //condition
+     //condition
         //temp:highest
         temp = $("span.day_high > em.degree_code");
         weather.current["condition"]["temp"]["highest"] = temp.text();   //오늘 최고기온
@@ -122,11 +125,23 @@ var func_get_C_data = function () {
         });
         weather.weekly[0]["date"] = "오늘";
         
-        //DataBase에 저장
+          //DataBase에 저장
         DB_Ref.set(weather);
+        
+    }
+  });
+
+  request(url2, (err, res, html) =>{  
+    //weather
+    if(!err) {
+      var $ = cheerio.load(html);    
+      var temp = $("div.fl > em > strong"); //날씨 텍스트
+      weather.current["temp"]["weather"] = temp.text(); 
+      DB_Ref.child('current/temp/weather').set(weather.current["temp"]["weather"]);
     }
   });
 }
+  
 
 
 var getIconClass = function(weather) {
@@ -214,7 +229,6 @@ var push = function() {
 
 
 
-
 exports.PushMessage = functions.database.ref("/fcmTokens/time")
 	.onCreate((snapshot, context) => {
     let rule = new schedule.RecurrenceRule();
@@ -224,11 +238,11 @@ exports.PushMessage = functions.database.ref("/fcmTokens/time")
 });
 
 
-exports.UpdateCurrentWthr = functions.database.ref("/weather/current")
-	.onWrite((change, context) => {
-	//data가 전부 삭제된 경우__성민 질문 
-	if (!change.after.exists()) return null;
-	//데이터를 1분마다 네이버에서 크롤링
-	setTimeout(func_get_C_data, 1000 * 60);
-	return null;
+
+exports.UpdateWthr = functions.database.ref("/weather/current/temp/time")
+	.onCreate((snapshot, context) => {
+    let rule = new schedule.RecurrenceRule();
+    rule.second = 30;
+    let pushing = schedule.scheduleJob(rule, func_get_C_data);
+    return 0;
 });

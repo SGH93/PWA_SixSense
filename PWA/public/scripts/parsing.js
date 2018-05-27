@@ -15,7 +15,8 @@
   var database = firebase.database().ref("/weather");
   database.on('value',function(snapshot){
     console.log(4);
-    app.updateForecastCard(snapshot.val());
+    //app.updateForecastCard(snapshot.val());
+    app.getForecast();
   });
 
   document.getElementById('butRefresh').addEventListener('click', function() {
