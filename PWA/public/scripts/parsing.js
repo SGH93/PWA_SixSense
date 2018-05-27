@@ -5,9 +5,9 @@
 
   var app = {
     isLoading: true,
-    visibleCards: {},
+    //visibleCards: {},
     spinner: document.querySelector('.loader'),
-    cardTemplate: document.querySelector('.cardTemplate'),
+    card: document.querySelector('.card'),
     container: document.querySelector('.main'),
   };
 
@@ -15,8 +15,8 @@
   var database = firebase.database().ref("/weather");
   database.on('value',function(snapshot){
     console.log(4);
-    //app.updateForecastCard(snapshot.val());
-    app.getForecast();
+    app.updateForecastCard(snapshot.val());
+    initialWeatherForecast = snapshot.val();
   });
 
   document.getElementById('butRefresh').addEventListener('click', function() {
@@ -26,7 +26,7 @@
 
 
   document.getElementById('butAdd').addEventListener('click', function() {
-    alert('업데이트 예정입니다.^^7');
+    alert('업데이트 예정입니다.');
   });
 
   // Updates a weather card with the latest weather forecast. If the card
@@ -39,14 +39,14 @@
     var weekly    = data.weekly;
 
 
-    var card = app.visibleCards[data.key];
-    if (!card) {
+    var card = app.card;
+    /*if (!card) {
       card = app.cardTemplate.cloneNode(true);
       card.classList.remove('cardTemplate');
       card.removeAttribute('hidden');
       app.container.appendChild(card);
       app.visibleCards[data.key] = card;
-    }
+    } */
 
     card.querySelector('.current .icon').classList.add(app.getIconClass(temp.weather));
     card.querySelector('.location').textContent                              = temp.label;
@@ -107,6 +107,7 @@
           var response = JSON.parse(request.response);
           var results = response;
           console.log(2);
+          initialWeatherForecast = results;
           app.updateForecastCard(results);
         }
       } else {
