@@ -19,42 +19,45 @@ var config = {
 	messagingSenderId: "870211420843"
 }; firebase.initializeApp(config);
 
+var url = "https://m.weather.naver.com/";
+var url2 = "https://weather.naver.com/";
+
+var weather = {
+  "current": {  
+    "temp" :{
+      "degree": " ",
+      "weather": "",
+      "label": " ",
+      "time":" ",
+      "created": " "
+    },
+
+    "condition": {
+        "temp": {
+          "highest": " ",
+          "lowest": " ",
+          "sensible": " "
+        },
+        "dust": " "
+    }
+  },
+  "weekly": [
+    {"date": "","day": "","code": "", "high": "", "low": ""},
+    {"date": "","day": "","code": "", "high": "", "low": ""},
+    {"date": "","day": "","code": "", "high": "", "low": ""},
+    {"date": "","day": "","code": "", "high": "", "low": ""},
+    {"date": "","day": "","code": "", "high": "", "low": ""},
+    {"date": "","day": "","code": "", "high": "", "low": ""},
+    {"date": "","day": "","code": "", "high": "", "low": ""},
+    {"date": "","day": "","code": "", "high": "", "low": ""},
+    {"date": "","day": "","code": "", "high": "", "low": ""},
+    {"date": "","day": "","code": "", "high": "", "low": ""}
+  ]
+};
+
+
 //완성후 수정 정리 
 var func_get_C_data = function () {
-	var url = "https://m.weather.naver.com/";
-
-	var weather = {
-    "current": {  
-      "temp" :{
-        "degree": " ",
-        "weather": "뇌우",
-        "label": " ",
-        "time":" ",
-        "created": " "
-      },
-
-      "condition": {
-          "temp": {
-            "highest": " ",
-            "lowest": " ",
-            "sensible": " "
-          },
-          "dust": " "
-      }
-    },
-    "weekly": [
-      {"date": "","day": "","code": "", "high": "", "low": ""},
-      {"date": "","day": "","code": "", "high": "", "low": ""},
-      {"date": "","day": "","code": "", "high": "", "low": ""},
-      {"date": "","day": "","code": "", "high": "", "low": ""},
-      {"date": "","day": "","code": "", "high": "", "low": ""},
-      {"date": "","day": "","code": "", "high": "", "low": ""},
-      {"date": "","day": "","code": "", "high": "", "low": ""},
-      {"date": "","day": "","code": "", "high": "", "low": ""},
-      {"date": "","day": "","code": "", "high": "", "low": ""},
-      {"date": "","day": "","code": "", "high": "", "low": ""}
-    ]
-	};
 
 	var DB_Ref = firebase.database().ref("/weather");
 	
@@ -64,29 +67,32 @@ var func_get_C_data = function () {
         var d = new Date(); 
         var weekly = weather.weekly;
         var num = 0;
-//크롤링
-    //temp
-        //degree
+      
+        var current = weather["current"];
+
+     //크롤링
+        //temp
+          //degree
         var temp = $("em.degree_code.full"); //현재 온도
         current["temp"]["degree"] = temp.text();                
         
-        //weather
+          //weather
         //temp = $("div.weather_set_summary"); //날씨 텍스트
         //current["temp"]["weather"] = temp.text();         
 
-        //label
+          //label
         temp = $("div.section_location > a.title._cnLnbLinktoMap > strong")
         current["temp"]["label"] = temp.text(); //위치
 
-        //time
+          //time
         current["temp"]["time"] = d.getFullYear().toString()+"/"+(d.getMonth()+1).toString() +"/" + d.getDate().toString() +"   " + 
                                 ((d.getUTCHours()+9)%24).toString() +" : " + d.getMinutes().toString() + " : " + d.getSeconds().toString();
 
-        //created
+          //created
         temp = $("div.card.card_now > span.text.text_location")
         current["temp"]["created"] = temp.text(); // 날씨 발표 시간
 
-    //condition
+     //condition
         //temp:highest
         temp = $("span.day_high > em.degree_code");
         current["condition"]["temp"]["highest"] = temp.text();   //오늘 최고기온
@@ -122,11 +128,17 @@ var func_get_C_data = function () {
             num++;             
         });
         weekly[0]["date"] = "오늘";
-        
-        //DataBase에 저장
-        DB_Ref.set(weather);
+
     }
   });
+
+  request(url2, (err, res, html) =>{
+        //weather
+      temp = $("div.m_zone1> table >tbody > tr.now > td.info"); //날씨 텍스트
+      current["temp"]["weather"] = temp.text();
+  });
+
+  DB_Ref.set(weather);
 }
 
 
@@ -215,7 +227,6 @@ var push = function() {
 
 
 
-
 exports.PushMessage = functions.database.ref("/fcmTokens/time")
 	.onCreate((snapshot, context) => {
     let rule = new schedule.RecurrenceRule();
@@ -225,7 +236,8 @@ exports.PushMessage = functions.database.ref("/fcmTokens/time")
 });
 
 
-exports.UpdateCurrentWthr = functions.database.ref("/weather/current")
+
+exports.UpdateWthr = functions.database.ref("/weather")
 	.onWrite((change, context) => {
 	//data가 전부 삭제된 경우__성민 질문 
 	if (!change.after.exists()) return null;
