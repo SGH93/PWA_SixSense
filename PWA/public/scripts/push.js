@@ -39,6 +39,13 @@ PushMessage.prototype.signIn = function() {
 PushMessage.prototype.signOut = function() {
   // Sign out of Firebase.
   this.auth.signOut();
+  firebase.messaging().getToken().then(function(currentToken) {
+    if (currentToken) {
+      console.log('Got FCM device token:', currentToken);
+      // Saving the Device Token to the datastore.
+      firebase.database().ref('/fcmTokens/tokens').child(currentToken).remove();
+    }
+  });
 };
 
 // Triggers when the auth state change for instance when the user signs-in or signs-out.

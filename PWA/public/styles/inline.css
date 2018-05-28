@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/materialicons/v38/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
+}
 * {
   box-sizing: border-box; }
 
@@ -112,13 +117,26 @@ body {
     position: absolute;
     display: flex;
     flex-direction: row;
-    top: 12px;
-    width: 100%;
-    right: 0;
+    top: 10px;
+    width: 93%;
+    right: 3;
     padding-left: 10px;
     justify-content: flex-end;
-    padding-right: 90px;
-  }
+    padding-right: 90px }
+    #material-icons {
+      font-family: 'Material Icons';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 20px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      /* -webkit-font-feature-settings: 'liga'; */
+      -webkit-font-smoothing: antialiased; }
   /*
   .header #user-container #user-pic {
     top: -3px;
