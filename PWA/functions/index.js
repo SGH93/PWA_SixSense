@@ -28,7 +28,7 @@ var func_get_C_data = function () {
 	var DB_Ref = firebase.database().ref("/weather");
   var url = "https://m.weather.naver.com/";
   var url2 = "https://weather.naver.com/rgn/townWetr.nhn";
-  let dust_state;
+
 
   var weather = {
     "current": {  
@@ -81,8 +81,8 @@ var func_get_C_data = function () {
         weather.current["temp"]["label"] = temp.text(); //위치
 
         //time
-        weather.current["temp"]["time"] = d.getFullYear().toString()+"/"+(d.getMonth()+1).toString() +"/" + d.getDate().toString(); 
-        //+"   " +((d.getUTCHours()+9)%24).toString() +" : " + d.getMinutes().toString() + " : " + d.getSeconds().toString()
+        weather.current["temp"]["time"] = d.getFullYear().toString()+"/"+(d.getMonth()+1).toString() +"/" + d.getDate().toString() +"   " + 
+                                ((d.getUTCHours()+9)%24).toString() +" : " + d.getMinutes().toString() + " : " + d.getSeconds().toString();
 
           //created
         temp = $("div.card.card_now > span.text.text_location")
@@ -103,7 +103,6 @@ var func_get_C_data = function () {
 
         //dust
         temp = $("li.finedust > span > em");
-        
         weather.current["condition"]["dust"] = temp.text();//오늘 미세먼지
 
        
@@ -196,8 +195,7 @@ var push = function() {
     let lowest = snapshot.val().weather.current.condition.temp.lowest;      // lowest temparature
     let dust = snapshot.val().weather.current.condition.dust;               // dust
     let weather = snapshot.val().weather.current.temp.weather;              // weather code
-    let dust_state;
-
+    
     if(dust<=30)
       dust_state = '좋음';
     else if(dust>30 && dust<=80)
