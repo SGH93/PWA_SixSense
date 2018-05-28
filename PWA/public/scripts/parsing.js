@@ -37,7 +37,7 @@
     var temp      = data.current.temp;
     var condition = data.current.condition;
     var weekly    = data.weekly;
-
+    let dust_state;
 
     var card = app.card;
     /*if (!card) {
@@ -47,12 +47,22 @@
       app.container.appendChild(card);
       app.visibleCards[data.key] = card;
     } */
+    let dust = parseInt(condition.dust);
+    if(dust<=30)
+      dust_state = '좋음';
+    else if(dust>30 && dust<=80)
+      dust_state = '보통';
+    else if(dust>80 && dust<=150)
+      dust_state = '나쁨';
+    else if(dust>150)
+      dust_state = '매우나쁨';
 
     card.querySelector('.current .icon').classList.add(app.getIconClass(temp.weather));
     card.querySelector('.location').textContent                              = temp.label;
     card.querySelector('.description').textContent                         = temp.weather;
-    card.querySelector('.date').textContent                                  = temp.time;
+    card.querySelector('.date').textContent                                  = temp.time + '   ' + temp.created;
     card.querySelector('.current .temperature .value').textContent           = temp.degree;
+    card.querySelector('.current .description .dust .level').textContent     = dust_state + ', ';
     card.querySelector('.current .description .dust .value').textContent     = condition.dust;
     card.querySelector('.current .description .sensible .value').textContent = condition.temp.sensible;
     card.querySelector('.current .description .highest .value').textContent  = condition.temp.highest;
@@ -139,7 +149,7 @@
         return 'snow';
       case '안개': 
         return 'fog';
-        return 'windy';
+        //return 'windy';
       case '흐림': 
       case '흐려짐': 
       case '구름많음':
