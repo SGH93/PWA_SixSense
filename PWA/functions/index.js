@@ -20,15 +20,36 @@ var config = {
 }; firebase.initializeApp(config);
 
 
+function getWorldTime(tzOffset) { // 24시간제
+  var now = new Date();
+  var tz = now.getTime() + (now.getTimezoneOffset() * 60000) + (tzOffset * 3600000);
+  now.setTime(tz);
 
 
-//완성후 수정 정리 
-var func_get_C_data = function () {
+  var s =
+    leadingZeros(now.getFullYear(), 4) + '-' +
+    leadingZeros(now.getMonth() + 1, 2) + '-' +
+    leadingZeros(now.getDate(), 2) + ' ' +
 
-	var DB_Ref = firebase.database().ref("/weather");
-  var url = "https://m.weather.naver.com/";
-  var url2 = "https://weather.naver.com/rgn/townWetr.nhn";
-  let dust_state;
+    leadingZeros(now.getHours(), 2) + ':' +
+    leadingZeros(now.getMinutes(), 2) + ':' +
+    leadingZeros(now.getSeconds(), 2);
+
+  return s;
+}
+
+
+function leadingZeros(n, digits) {
+  var zero = '';
+  n = n.toString();
+
+  if (n.length < digits) {
+    for (i = 0; i < digits - n.length; i++)
+      zero += '0';
+  }
+  return zero + n;
+}
+
 
   var weather = {
     "current": {  
@@ -63,6 +84,26 @@ var func_get_C_data = function () {
     ]
   };
 
+//완성후 수정 정리 
+var func_get_C_data = function () {
+
+	var DB_Ref = firebase.database().ref("/weather");
+  var url = "https://m.weather.naver.com/m/main.nhn?regionCode=09350102";
+  var url2 = "https://weather.naver.com/rgn/townWetr.nhn?naverRgnCd=09350102";
+  let dust_state;
+
+
+
+  request(url2, (err, res, html) =>{  
+    //weather
+    if(!err) {
+      var $ = cheerio.load(html);    
+      var temp = $("div.fl > em > strong"); //날씨 텍스트
+      weather.current["temp"]["weather"] = temp.text(); 
+      DB_Ref.child('current/temp/weather').set(weather.current["temp"]["weather"]);
+    }
+  });
+
 	request(url, (err, res, html) => {
     if (!err) {
         var $ = cheerio.load(html);       
@@ -81,8 +122,9 @@ var func_get_C_data = function () {
         weather.current["temp"]["label"] = temp.text(); //위치
 
         //time
-        weather.current["temp"]["time"] = d.getFullYear().toString()+"/"+(d.getMonth()+1).toString() +"/" + d.getDate().toString(); 
-        //+"   " +((d.getUTCHours()+9)%24).toString() +" : " + d.getMinutes().toString() + " : " + d.getSeconds().toString()
+        weather.current["temp"]["time"] = getWorldTime(9);
+        // d.getFullYear().toString()+"/"+(d.getMonth()+1).toString() +"/" + d.getDate().toString(); 
+        // //+"   " +((d.getUTCHours()+9)%24).toString() +" : " + d.getMinutes().toString() + " : " + d.getSeconds().toString()
 
           //created
         temp = $("div.card.card_now > span.text.text_location")
@@ -126,19 +168,10 @@ var func_get_C_data = function () {
         });
         weather.weekly[0]["date"] = "오늘";
         
-          //DataBase에 저장
+       
+        //DataBase에 저장
         DB_Ref.set(weather);
         
-    }
-  });
-
-  request(url2, (err, res, html) =>{  
-    //weather
-    if(!err) {
-      var $ = cheerio.load(html);    
-      var temp = $("div.fl > em > strong"); //날씨 텍스트
-      weather.current["temp"]["weather"] = temp.text(); 
-      DB_Ref.child('current/temp/weather').set(weather.current["temp"]["weather"]);
     }
   });
 }
@@ -224,7 +257,7 @@ var push = function() {
     };
 
     //확인용 
-    firebase.database().ref("/fcmTokens/time").set(message.notification.body);
+    firebase.database().ref("/fcmTokens/time").set( getWorldTime(9));
     return admin.messaging().sendToDevice(tokens, message);    // send push message to devices
    });
 };
@@ -244,7 +277,7 @@ exports.PushMessage = functions.database.ref("/fcmTokens/time")
 exports.UpdateWthr = functions.database.ref("/weather/current/temp/time")
 	.onCreate((snapshot, context) => {
     let rule = new schedule.RecurrenceRule();
-    rule.second = 30;
+    rule.second = 0;
     let pushing = schedule.scheduleJob(rule, func_get_C_data);
     return 0;
 });
