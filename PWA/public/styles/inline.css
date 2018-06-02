@@ -137,25 +137,6 @@ body {
       direction: ltr;
       /* -webkit-font-feature-settings: 'liga'; */
       -webkit-font-smoothing: antialiased; }
-  /*
-  .header #user-container #user-pic {
-    top: -3px;
-    position: relative;
-    display: inline-block;
-    background-image: url('/images/profile_placeholder.png');
-    background-repeat: no-repeat;
-    width: 40px;
-    height: 40px;
-    background-size: 40px;
-    border-radius: 20px;
-  }
-  .header #user-container #user-name {
-    font-size: 16px;
-    line-height: 36px;
-    padding-right: 10px;
-    padding-left: 20px;
-  }
-  */
   .header #butRefresh {
     background: url(/images/ic_refresh_white_24px.svg) center center no-repeat; }
   .header #butAdd {
@@ -270,26 +251,6 @@ body {
   transition: -webkit-transform 0.333s cubic-bezier(0, 0, 0.21, 1) 0.05s;
   transition: transform 0.333s cubic-bezier(0, 0, 0.21, 1) 0.05s;
   transition: transform 0.333s cubic-bezier(0, 0, 0.21, 1) 0.05s, -webkit-transform 0.333s cubic-bezier(0, 0, 0.21, 1) 0.05s; }
-
-.dialog > div {
-  padding-left: 24px;
-  padding-right: 24px; }
-
-.dialog-title {
-  padding-top: 20px;
-  font-size: 1.25em; }
-
-.dialog-body {
-  padding-top: 20px;
-  padding-bottom: 24px; }
-  .dialog-body select {
-    width: 100%;
-    font-size: 2em; }
-
-.dialog-buttons {
-  padding: 8px !important;
-  float: right; }
-
 .card {
   padding: 16px;
   position: relative;

@@ -30,14 +30,12 @@ function getWorldTime(tzOffset) { // 24시간제
     leadingZeros(now.getFullYear(), 4) + '-' +
     leadingZeros(now.getMonth() + 1, 2) + '-' +
     leadingZeros(now.getDate(), 2) + ' ' +
-
     leadingZeros(now.getHours(), 2) + ':' +
     leadingZeros(now.getMinutes(), 2) + ':' +
     leadingZeros(now.getSeconds(), 2);
 
   return s;
 }
-
 
 function leadingZeros(n, digits) {
   var zero = '';
@@ -50,6 +48,11 @@ function leadingZeros(n, digits) {
   return zero + n;
 }
 
+var func_get_C_data = function () {
+
+	var DB_Ref = firebase.database().ref("/weather");
+  var url = "https://m.weather.naver.com/m/main.nhn?regionCode=09350102";
+  let dust_state;
 
   var weather = {
     "current": {  
@@ -84,94 +87,65 @@ function leadingZeros(n, digits) {
     ]
   };
 
-//완성후 수정 정리 
-var func_get_C_data = function () {
-
-	var DB_Ref = firebase.database().ref("/weather");
-  var url = "https://m.weather.naver.com/m/main.nhn?regionCode=09350102";
-  var url2 = "https://weather.naver.com/rgn/townWetr.nhn?naverRgnCd=09350102";
-  let dust_state;
-
-
-
-  request(url2, (err, res, html) =>{  
-    //weather
-    if(!err) {
-      var $ = cheerio.load(html);    
-      var temp = $("div.fl > em > strong"); //날씨 텍스트
-      weather.current["temp"]["weather"] = temp.text(); 
-      DB_Ref.child('current/temp/weather').set(weather.current["temp"]["weather"]);
-    }
-  });
-
 	request(url, (err, res, html) => {
     if (!err) {
-        var $ = cheerio.load(html);       
-        var d = new Date(); 
-        var num = 0;
-    
+      var $ = cheerio.load(html);       
+      var d = new Date(); 
+      var num = 0;
+      var weather_arr;
 
-     //크롤링
-        //temp
-          //degree
-        var temp = $("em.degree_code.full"); //현재 온도
-        weather.current["temp"]["degree"] = temp.text();                
-      
-        //label
-        temp = $("div.section_location > a.title._cnLnbLinktoMap > strong")
-        weather.current["temp"]["label"] = temp.text(); //위치
 
-        //time
-        weather.current["temp"]["time"] = getWorldTime(9);
-        // d.getFullYear().toString()+"/"+(d.getMonth()+1).toString() +"/" + d.getDate().toString(); 
-        // //+"   " +((d.getUTCHours()+9)%24).toString() +" : " + d.getMinutes().toString() + " : " + d.getSeconds().toString()
+      //degree
+      var temp = $("em.degree_code.full"); //현재 온도
+      weather.current["temp"]["degree"] = temp.text();                
 
-          //created
-        temp = $("div.card.card_now > span.text.text_location")
-        weather.current["temp"]["created"] = temp.text(); // 날씨 발표 시간
+      //label
+      temp = $("div.section_location > a.title._cnLnbLinktoMap > strong")
+      weather.current["temp"]["label"] = temp.text(); //위치
 
-     //condition
-        //temp:highest
-        temp = $("span.day_high > em.degree_code");
-        weather.current["condition"]["temp"]["highest"] = temp.text();   //오늘 최고기온
+      //weather
+      temp = $("div.weather_set_summary"); //날씨 텍스트
+      weather_arr = temp.text().split('\n');         
+      weather.current["temp"]["weather"] = weather_arr[0];         
 
-        //temp:lowest
-        temp = $("span.day_low > em.degree_code");
-        weather.current["condition"]["temp"]["lowest"] = temp.text();    //오늘 최저기온
-        
-        //temp:sensible
-        temp = $("span.day_feel > em.degree_code");
-        weather.current["condition"]["temp"]["sensible"] = temp.text();    //오늘 체감기온
+      //time
+      weather.current["temp"]["time"] = getWorldTime(9);
 
-        //dust
-        temp = $("li.finedust > span > em");
-        
-        weather.current["condition"]["dust"] = temp.text();//오늘 미세먼지
+      //created
+      temp = $("div.card.card_now > span.text.text_location")
+      weather.current["temp"]["created"] = temp.text(); // 날씨 발표 시간
 
-       
+      //temp:highest
+      temp = $("span.day_high > em.degree_code");
+      weather.current["condition"]["temp"]["highest"] = temp.text();   //오늘 최고기온
 
-        //주간 날씨 데이터 크롤링
-        $(".weekly_item").each(function(index,item){                
-          weather.weekly[num]["day"] = $(this).find('.day').text();   //요일           
-            
-            if(num === 0 || num === 1){   //날짜
-              weather.weekly[num]["date"] = $(this).find('em.sub.type_num').text();   
-            }            
-            else{
-              weather.weekly[num]["date"] = $(this).find('div.weekly_item_date > em.sub').text();
-            }
-            
-            weather.weekly[num]["code"]= $(this).find('div.weekly_item_weather > div:nth-child(1) > div').text();   //날씨 상태
-            weather.weekly[num]["low"]= $(this).find('.low > .degree_code').text();     //최저기온
-            weather.weekly[num]["high"]= $(this).find('.high > .degree_code').text();   //최고기온
-            num++;             
-        });
-        weather.weekly[0]["date"] = "오늘";
-        
-       
-        //DataBase에 저장
-        DB_Ref.set(weather);
-        
+      //temp:lowest
+      temp = $("span.day_low > em.degree_code");
+      weather.current["condition"]["temp"]["lowest"] = temp.text();    //오늘 최저기온
+
+      //temp:sensible
+      temp = $("span.day_feel > em.degree_code");
+      weather.current["condition"]["temp"]["sensible"] = temp.text();    //오늘 체감기온
+
+      //dust
+      temp = $("li.finedust > span > em");
+      weather.current["condition"]["dust"] = temp.text();//오늘 미세먼지
+
+      //weekly
+      $(".weekly_item").each(function(index,item){                
+        if(num === 0 || num === 1) weather.weekly[num]["date"] = $(this).find('em.sub.type_num').text();  
+        else                       weather.weekly[num]["date"] = $(this).find('div.weekly_item_date > em.sub').text();
+
+        weather.weekly[num]["day"]  = $(this).find('.day').text();   //요일  
+        weather.weekly[num]["code"] = $(this).find('div.weekly_item_weather > div:nth-child(1) > div').text();   //날씨 상태
+        weather.weekly[num]["low"]  = $(this).find('.low > .degree_code').text();     //최저기온
+        weather.weekly[num]["high"] = $(this).find('.high > .degree_code').text();   //최고기온
+        num++;             
+      });
+      weather.weekly[0]["date"] = "오늘";
+
+      //DataBase에 저장
+      DB_Ref.set(weather);
     }
   });
 }
@@ -180,7 +154,8 @@ var func_get_C_data = function () {
 
 var getIconClass = function(weather) {
   switch (weather) {
-    case '맑음': 
+    case '맑음':
+    case '맑음(밤)':
       return 'clear';
     case '비':
       return 'rain';
@@ -267,7 +242,7 @@ var push = function() {
 exports.PushMessage = functions.database.ref("/fcmTokens/time")
 	.onCreate((snapshot, context) => {
     let rule = new schedule.RecurrenceRule();
-    rule.second = 30;
+    rule.minute = 30;
     let pushing = schedule.scheduleJob(rule, push);
     return 0;
 });
@@ -276,8 +251,9 @@ exports.PushMessage = functions.database.ref("/fcmTokens/time")
 
 exports.UpdateWthr = functions.database.ref("/weather/current/temp/time")
 	.onCreate((snapshot, context) => {
-    let rule = new schedule.RecurrenceRule();
-    rule.second = 0;
-    let pushing = schedule.scheduleJob(rule, func_get_C_data);
+    //let rule = new schedule.RecurrenceRule();
+    //rule.minute = 1;
+    console.log('parsing...');
+    let pushing = schedule.scheduleJob('*/5 * * * *', func_get_C_data);
     return 0;
 });

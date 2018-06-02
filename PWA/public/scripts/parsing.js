@@ -5,7 +5,6 @@
 
   var app = {
     isLoading: true,
-    //visibleCards: {},
     spinner: document.querySelector('.loader'),
     card: document.querySelector('.card'),
     container: document.querySelector('.main'),
@@ -14,7 +13,6 @@
   // Get a reference to the database service
   var database = firebase.database().ref("/weather");
   database.on('value',function(snapshot){
-    console.log(4);
     app.updateForecastCard(snapshot.val());
     initialWeatherForecast = snapshot.val();
   });
@@ -24,13 +22,11 @@
     app.getForecast();
   });
 
-
   document.getElementById('butAdd').addEventListener('click', function() {
     alert('업데이트 예정입니다.');
   });
 
-  // Updates a weather card with the latest weather forecast. If the card
-  // doesn't already exist, it's cloned from the template.
+  
   app.updateForecastCard = function(data) {
     
 
@@ -38,15 +34,8 @@
     var condition = data.current.condition;
     var weekly    = data.weekly;
     let dust_state;
-
     var card = app.card;
-    /*if (!card) {
-      card = app.cardTemplate.cloneNode(true);
-      card.classList.remove('cardTemplate');
-      card.removeAttribute('hidden');
-      app.container.appendChild(card);
-      app.visibleCards[data.key] = card;
-    } */
+
     let dust = parseInt(condition.dust);
     if(dust<=30)
       dust_state = '좋음';
@@ -59,7 +48,7 @@
 
     card.querySelector('.current .icon').classList.add(app.getIconClass(temp.weather));
     card.querySelector('.location').textContent                              = temp.label;
-    card.querySelector('.description').textContent                         = temp.weather;
+    card.querySelector('.description').textContent                           = temp.weather;
     card.querySelector('.date').textContent                                  = temp.time + '   ' + temp.created;
     card.querySelector('.current .temperature .value').textContent           = temp.degree;
     card.querySelector('.current .description .dust .level').textContent     = dust_state + ', ';
@@ -102,7 +91,6 @@
         if (response) {
           response.json().then(function updateFromCache(json) {
             var results = json;
-            console.log(1);
             app.updateForecastCard(results);
           });
         }
@@ -116,7 +104,6 @@
         if (request.status === 200) {
           var response = JSON.parse(request.response);
           var results = response;
-          console.log(2);
           initialWeatherForecast = results;
           app.updateForecastCard(results);
         }
@@ -129,15 +116,14 @@
     
     request.open('GET', url);
     request.send();
-
-
   };
 
   // Iterate all of the cards and attempt to get the latest forecast data
 
   app.getIconClass = function(weather) {
     switch (weather) {
-      case '맑음': 
+      case '맑음':
+      case '맑음(밤)' : 
         return 'clear-day';
       case '비':
         return 'rain';
@@ -171,11 +157,6 @@
     }
   };
 
-  /*
-   * Fake weather data that is presented when the user first uses the app,
-   * or when the user has not saved any cities. See startup code for more
-   * discussion.
-   */
   var initialWeatherForecast = { 
     "current": {
       "temp" :{
@@ -208,7 +189,7 @@
   
   app.getForecast();
 
-   // TODO add service worker code here
+   //service worker
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker
              .register('./service-worker.js')
